@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
     const cart = [];
+    localStorage.setItem("cart", JSON.stringify(cart));
 
     const productList = document.getElementById("product-list"); 
     const cartItems = document.getElementById("cart-items");
@@ -34,7 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
     })
    
     function addtocart(product){
-        cart.push(product);
+        let storedItems = JSON.parse(localStorage.getItem("cart")) || [];
+        storedItems.push(product);
+        localStorage.setItem("cart", JSON.stringify(storedItems));
         rendercart();
     }
 
@@ -42,9 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
        emptyCartMessage.innerText="";
        cartItems.innerText=""
        let pricesum = 0;
-       if(cart.length > 0){
+       const localcart = JSON.parse(localStorage.getItem("cart"));
+       if(localcart.length > 0){
             cartTotalMessage.classList.remove("hidden")
-            cart.forEach((item,index) => {
+            localcart.forEach((item,index) => {
                 pricesum += item.price;
                 const cartdiv = document.createElement("div");
                 cartdiv.classList.add("product");
@@ -70,8 +74,10 @@ document.addEventListener("DOMContentLoaded", () => {
     cartItems.addEventListener("click", (e)=> {
         if(e.target.tagName === "BUTTON"){
             const selectid = parseInt(e.target.getAttribute("data-id"))
-            const index = cart.findIndex(p => p.id === selectid)
-            cart.splice(index,1);
+            let storedItems = JSON.parse(localStorage.getItem("cart")) || [];
+            storedItems = storedItems.filter(item => item.id !== selectid);
+            localStorage.setItem("cart", JSON.stringify(storedItems));
+
         }
         rendercart();
     })
